@@ -9,8 +9,7 @@ import platform
 
 '''
     TODO:
-        - Add wait systme for download
-        - rename files in output
+        - Add wait system for download
 '''
 
 
@@ -102,11 +101,19 @@ def convertData(index, inputDirectory, outputDirectory):
     time.sleep(10)
     driver.close()
 
+def renameFiles(outputDirectory):
+    for index, filename in  enumerate(outputDirectory):
+        zero = '0' if index < 10 else '' 
+        my_dest =argv[2]+'ROUTE_STAGE'+zero+str(index+1)+'_converted.csv'
+        my_source =argv[2] + filename
+        os.rename(my_source, my_dest)
+    print("File rename complete.")
+
 if __name__ == "__main__":
     argv = sys.argv
     isValid = readData(sys.argv)
     if (isValid == True):
-        print('SUCCESS: Filecheck complete.\nConverting data...')
+        print('Filecheck complete.\nConverting data...')
         try:
             inputFiles = os.listdir(argv[1])
             if (len(inputFiles) < 1):
@@ -114,7 +121,9 @@ if __name__ == "__main__":
                 exit()
             for index, value in enumerate(inputFiles):
                 convertData(index, argv[1], argv[2])
-            for item in os.listdir(argv[2]):
+            outputDirectory = os.listdir(argv[2])
+            renameFiles(outputDirectory)
+            for item in outputDirectory:
                 if (item.endswith(".tmp") or item.endswith(".crdownload")):
                     os.remove(os.path.join(argv[2], item))
         except Exception as e:
@@ -124,7 +133,7 @@ if __name__ == "__main__":
     else:
         print('ERROR: One or more files were not in csv format')
         exit()
-    print('Conversion complete!')
+    print('SUCCESS: Conversion complete!')
     
     
 
