@@ -9,8 +9,7 @@ import platform
 
 '''
     TODO:
-        - Add support for multiple file uploads
-        - Add headless mode support
+        - Add wait systme for download
         - rename files in output
 '''
 
@@ -40,18 +39,23 @@ def readData(argv):
         return(errorflag)
         
 def configDriver(outputDirectory):
+    driverName = 'chromedriver.exe'
+    # try:
     outputDir = os.path.abspath(outputDirectory)
     options = Options()
     options.add_argument("--log-level=3")
-    # Runs Chrome in headless mode.
+        # Runs Chrome in headless mode.
     options.add_argument("--headless") 
     preferences = {'download.default_directory': outputDir}
     options.add_experimental_option("prefs",preferences)
+    if (not os.path.isfile('./driver/'+driverName)):
+        print(f'ERROR: driver {driverName} not found')
+        exit()
     driver = webdriver.Chrome('./driver/chromedriver.exe',chrome_options=options)
     driver.maximize_window()
     driver.get('https://www.gpsvisualizer.com/convert_input')
     return(driver)
-
+      
 def blockAdverts(driver):
     # block ads
     # element = driver.find_element_by_xpath("/html/body/table/tbody/tr/td[@class='nonmobile_body']/table/tbody/tr/td[3]")
@@ -77,7 +81,7 @@ def fillForm(driver):
 def downloadOutput(driver):
     window_after = driver.window_handles[0]
     driver.switch_to.window(window_after)
-    # blockAdverts(driver)
+    blockAdverts(driver)
     downloadLink = driver.find_element_by_xpath("/html/body/table/tbody/tr/td[@class='nonmobile_body']/p[3]/a")
     downloadLink.click()
 
@@ -85,7 +89,7 @@ def convertData(index, inputDirectory, outputDirectory):
     inputDir = os.path.abspath(inputDirectory)
     inputFiles = os.listdir(inputDir)
     driver = configDriver(outputDirectory)
-    # blockAdverts(driver)
+    blockAdverts(driver)
     uploadBox = driver.find_element_by_name("uploaded_file_1")
     if (platform.system() == 'Windows' ):
         escapeCharacter = '\\' 
@@ -95,6 +99,8 @@ def convertData(index, inputDirectory, outputDirectory):
     fillForm(driver)
     submitButton = driver.find_element_by_class_name('gpsv_submit').click()
     downloadOutput(driver)
+    time.sleep(10)
+    driver.close()
 
 if __name__ == "__main__":
     argv = sys.argv
@@ -103,8 +109,14 @@ if __name__ == "__main__":
         print('SUCCESS: Filecheck complete.\nConverting data...')
         try:
             inputFiles = os.listdir(argv[1])
+            if (len(inputFiles) < 1):
+                print("ERROR: no input files detected")
+                exit()
             for index, value in enumerate(inputFiles):
                 convertData(index, argv[1], argv[2])
+            for item in os.listdir(argv[2]):
+                if (item.endswith(".tmp") or item.endswith(".crdownload")):
+                    os.remove(os.path.join(argv[2], item))
         except Exception as e:
             print(f'ERROR: {e}')
             exit() 
