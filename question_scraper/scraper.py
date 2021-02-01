@@ -29,9 +29,12 @@ def parse_args():
     return parser.parse_args()
 
 def parse_line(line):
-    # Clean up strings     
+    # Clean up strings 
+    if ('885CB989129A5F974833949052CFB2F2' in line):
+        line = line.replace("885CB989129A5F974833949052CFB2F2","")    
     if ('Section:' in line):
         line = line.replace("Section: [none]","")
+        line = line.replace("Section: (none)","")
     if ('References:' in line):
         line = '\n' + line + '\n'
     if ('A.' in line or 'B.' in line  or 'C.' in line or 'D.' in line or 'E.' in line or 'F.' in line):
@@ -40,12 +43,19 @@ def parse_line(line):
 
 def parse_qa(question, answer):
     dict_ = {}
+    if ('Note: ' in question):
+        question = question.replace("Note: This question is part of a series of questions that present the same scenario. Each question in the series contains a unique solution that mightmeet the stated goals. Some question","")
+        question = question.replace("sets might have more than one correct solution, while others might not have a correct solution.After you answer a question in this ","")
+        question = question.replace(" scenario, ","")
+        question = question.replace("s section, ","")
+        question = question.replace("you will NOT be able to return to it. As a result, these questions will not appear in the review screen.","")
+        question = question.replace("Note: This question is a part of series of questions that present the same scenario. Each question in the series contains a unique solution. Determinewhether the solution meets the stated goals.","") 
+        # print(question)
     dict_['question'] = question
 
-    
     if ('Correct Answer:' in answer):
         answer = answer.replace("Correct Answer: ","")
-    
+
     description_ = ""
     description = answer.splitlines()
     

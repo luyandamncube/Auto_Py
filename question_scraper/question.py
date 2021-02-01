@@ -41,7 +41,7 @@ def parse_files(input_dir):
             else:
                 questions.append(json_question)
                 points_total += len(data['answer'])
-            # print(data['question'])
+                # print(f'{points_total} {data["answer"]}')
             # print('=====================================================')
     # print('Start questions ')
     # print(f'No of questions {num_questions}')
@@ -55,9 +55,10 @@ def questioner(questions,input_dir):
     mark = 0
     print(f'No of questions {total}\n')
     random.shuffle(questions)
-    for question in questions:
+    for index, question in enumerate(questions):
         with open(input_dir+'\\'+question) as json_file:
             data = json.load(json_file)
+            print(f'{index} of {total} ----------------------------------------------------------------')
             print(data['question'])
         try:
             value = input("Your answer:\n").upper()
@@ -68,6 +69,7 @@ def questioner(questions,input_dir):
                 mark += matched_characters
             else:
                 print(f'WRONG: {data["answer"]}\n')
+            print(data["description"]+ '\n')
         except KeyboardInterrupt:
             return (mark)
     return (mark)
