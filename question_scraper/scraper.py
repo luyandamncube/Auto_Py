@@ -5,6 +5,8 @@ import argparse
 import json
 import string
 import random
+import re
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Pdf scraper')
@@ -51,7 +53,8 @@ def parse_qa(question, answer):
         question = question.replace("you will NOT be able to return to it. As a result, these questions will not appear in the review screen.","")
         question = question.replace("Note: This question is a part of series of questions that present the same scenario. Each question in the series contains a unique solution. Determinewhether the solution meets the stated goals.","") 
         # print(question)
-    dict_['question'] = question
+    rx = r"\.(?=\S)"
+    dict_['question'] = re.sub(rx, ". ", question)
 
     if ('Correct Answer:' in answer):
         answer = answer.replace("Correct Answer: ","")
@@ -59,11 +62,11 @@ def parse_qa(question, answer):
     description_ = ""
     description = answer.splitlines()
     
-    dict_['answer'] = description[0]
+    dict_['answer'] = re.sub(rx, ". ", description[0])
     for i in range(2, len(description)):  
         description_ = description_ + description[i]
 
-    dict_['description'] = description_
+    dict_['description'] = re.sub(rx, ". ", description_)
     # print(description)
     return dict_
 

@@ -52,6 +52,7 @@ def parse_files(input_dir):
 
 def questioner(questions,input_dir):
     total = len(questions)
+    total_thus_far = 0
     mark = 0
     print(f'No of questions {total}\n')
     random.shuffle(questions)
@@ -59,11 +60,12 @@ def questioner(questions,input_dir):
         with open(input_dir+'\\'+question) as json_file:
             data = json.load(json_file)
             print(f'{index} of {total} ----------------------------------------------------------------')
+            total_thus_far += len(data['answer'])
             print(data['question'])
         try:
+
             value = input("Your answer:\n").upper()
             matched_characters = len(set(value) & set(data['answer']))
-            # print(f'MATCHED:  {matched_characters}')
             if (matched_characters > 0):
                 print(f'CORRECT: {data["answer"]}\n')
                 mark += matched_characters
@@ -71,8 +73,8 @@ def questioner(questions,input_dir):
                 print(f'WRONG: {data["answer"]}\n')
             print(data["description"]+ '\n')
         except KeyboardInterrupt:
-            return (mark)
-    return (mark)
+            return (total_thus_far,mark)
+    return (total_thus_far, mark)
 
 if __name__ == "__main__":
     args = parse_args()
@@ -80,10 +82,10 @@ if __name__ == "__main__":
         print('Loading questions')
         points_total, questions = parse_files(args.input)
         print('Beginning quiz')
-        mark = questioner(questions, args.input)
-        final = (mark/points_total) * 100 
+        total_thus_far,mark = questioner(questions, args.input)
+        final = (mark/total_thus_far) * 100 
         print('=================================================================')
-        print(f'{mark} out of {points_total}')
+        print(f'{mark} out of {total_thus_far}')
         print(f'Your mark: {final}')
 
     except KeyboardInterrupt as e:
