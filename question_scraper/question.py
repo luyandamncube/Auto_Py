@@ -3,6 +3,12 @@ import os
 import argparse
 import json 
 import random
+import platform
+
+if (platform.system() == 'Windows' ):
+    escapeCharacter = '\\' 
+else:
+    escapeCharacter = '//' 
 
 def parse_args():
     parser = argparse.ArgumentParser(description='JSON question bank reader')
@@ -29,7 +35,7 @@ def parse_files(input_dir):
     for json_question in os.listdir(input_dir):
         if json_question.endswith(".json"): 
             num_questions += 1 
-            with open(input_dir+'\\'+json_question) as json_file:
+            with open(input_dir+escapeCharacter+json_question) as json_file:
                 data = json.load(json_file)
             if ('HOTSPOT' in data['question']):
                 hotspot_questions.append(json_question)
@@ -57,7 +63,7 @@ def questioner(questions,input_dir):
     print(f'No of questions {total}\n')
     random.shuffle(questions)
     for index, question in enumerate(questions):
-        with open(input_dir+'\\'+question) as json_file:
+        with open(input_dir+escapeCharacter+question) as json_file:
             data = json.load(json_file)
             print(f'{index} of {total} ----------------------------------------------------------------')
             total_thus_far += len(data['answer'])

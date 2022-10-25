@@ -6,6 +6,12 @@ import json
 import string
 import random
 import re
+import platform
+
+if (platform.system() == 'Windows' ):
+    escapeCharacter = '\\' 
+else:
+    escapeCharacter = '//' 
 
 
 def parse_args():
@@ -33,7 +39,19 @@ def parse_args():
 def parse_line(line):
     # Clean up strings 
     if ('885CB989129A5F974833949052CFB2F2' in line):
-        line = line.replace("885CB989129A5F974833949052CFB2F2","")    
+        line = line.replace("885CB989129A5F974833949052CFB2F2","")   
+    if ('IT Exam Dumps' in line):
+        line = line.replace("IT Exam Dumps","")   
+    if ('Learn Anything' in line):
+            line = line.replace("Learn Anything","")  
+    if ('VCEup' in line):
+            line = line.replace("VCEup","")  
+    if (' | ' in line):
+            line = line.replace(" | ","")  
+    
+    if ('\u2013 ' in line):
+            line = line.replace("\u2013 ","")  
+
     if ('Section:' in line):
         line = line.replace("Section: [none]","")
         line = line.replace("Section: (none)","")
@@ -41,11 +59,17 @@ def parse_line(line):
         line = '\n' + line + '\n'
     if ('A.' in line or 'B.' in line  or 'C.' in line or 'D.' in line or 'E.' in line or 'F.' in line):
         line = '\n' + line
+    if ('HOTSPOT' in line or 'SIMULATION' in line  or 'DRAG DROP'):
+        line = line + '\n'
     return (line)
 
 def parse_qa(question, answer):
     dict_ = {}
+    
+    # | VCEup. com
+
     if ('Note: ' in question):
+        question = question.replace("Use the following login credentials as needed:Azure Username: xxxxxAzure Password: xxxxxThe following information is for technical support purposes only:Lab Instance:","")
         question = question.replace("Note: This question is part of a series of questions that present the same scenario. Each question in the series contains a unique solution that mightmeet the stated goals. Some question","")
         question = question.replace("sets might have more than one correct solution, while others might not have a correct solution.After you answer a question in this ","")
         question = question.replace(" scenario, ","")
@@ -121,7 +145,7 @@ def parse_pdf(pdf_file):
 
 def dump_qa(qa, output_dir):
     question_name = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(8))
-    with open(output_dir + '\\' +  question_name + '.json', 'w') as fp:
+    with open(output_dir + escapeCharacter +  question_name + '.json', 'w') as fp:
         json.dump(qa, fp)
 
 if __name__ == "__main__":
