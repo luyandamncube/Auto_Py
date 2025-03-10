@@ -14,5 +14,5 @@ pip install -r .\requirements.txt
 
 ## Usage
 ```
-python generate_letterhead.py --recipient "John Doe" --subject "Important Notice" --text "This is a test letter."
+python generate_letterhead.py --recipient "Jane Doe" --subject "Important Notice" --text "src/body.txt"
 ```
